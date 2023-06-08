@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>PROMPTCONST</title>
+  <style>
+    body {
+      background-color: #f1f1f1;
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      max-width: 400px;
+      margin: 0 auto;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    
+    h2 {
+      font-size: 24px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    
+    label {
+      display: block;
+      margin-top: 10px;
+      font-size: 14px;
+      color: #555;
+    }
+    
+    input[type="text"],
+    select {
+      width: 100%;
+      padding: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    
+    button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    
+    button:hover {
+      background-color: #45a049;
+    }
+    
+    #promptContainer {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 14px;
+      background-color: #f9f9f9;
+    }
+    
+    #promptContainer pre {
+      white-space: pre-wrap;
+    }
+    
+    #copyButton {
+      margin-top: 10px;
+    }
+    
+    #copyButtonContainer {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>PROMPTCONST</h2>
+    <!--<form action="/generate" method="POST">-->
+    <label for="style">Стиль:</label>
+    <select id="style" onchange="selectStyle()">
+      <option value="MidJorney">MidJorney</option>
+      <option value="OpenJorney">OpenJorney</option>
+      <option value="ChatGPT">ChatGPT</option>
+    </select>
+    
+    <div id="roleContainer" style="display: none;">
+      <label for="role">Роль:</label>
+      <input type="text" id="role">
+    </div>
+    
+    <div id="moodContainer" style="display: none;">
+      <label for="mood">Настроение:</label>
+      <input type="text" id="mood">
+    </div>
+    
+    <div id="areaContainer" style="display: none;">
+      <label for="area">Область:</label>
+      <input type="text" id="area">
+    </div>
+    
+    <div id="queryContainer" style="display: none;">
+      <label for="query">Запрос:</label>
+      <input type="text" id="query">
+    </div>
+    
+    <div id="engineContainer" style="display: none;">
+      <label for="engine">Графический движок:</label>
+      <select id="engine">
+        <option value="Unreal Engine">Unreal Engine</option>
+        <option value="Unity">Unity</option>
+        <option value="CryEngine">CryEngine</option>
+      </select>
+    </div>
+    
+    <div id="featuresContainer" style="display: none;">
+      <label for="features">Особенности:</label>
+      <div id="features">
+        <label><input type="checkbox" name="feature" value="Intricate details"> Intricate details</label>
+        <label><input type="checkbox" name="feature" value="Fine art"> Fine art</label>
+        <label><input type="checkbox" name="feature" value="Max details"> Max details</label>
+        <label><input type="checkbox" name="feature" value="Ultra realistic"> Ultra realistic</label>
+        <label><input type="checkbox" name="feature" value="Photo realism"> Photo realism</label>
+        <label><input type="checkbox" name="feature" value="Perfect anatomy"> Perfect anatomy</label>
+        <label><input type="checkbox" name="feature" value="Precise features"> Precise features</label>
+        <label><input type="checkbox" name="feature" value="Cinematic lighting"> Cinematic lighting</label>
+        <label><input type="checkbox" name="feature" value="Volumetric lighting"> Volumetric lighting</label>
+        <label><input type="checkbox" name="feature" value="8k"> 8k</label>
+        <label><input type="checkbox" name="feature" value="HDR"> HDR</label>
+        <label><input type="checkbox" name="feature" value="RTX"> RTX</label>
+      </div>
+    </div>
+    
+    <div id="chatGptContainer" style="display: none;">
+      <label for="chatGptCategory">Категория выбора:</label>
+      <select id="chatGptCategory">
+        <option value="Davinchi">Davinchi</option>
+        <option value="Ada">Ada</option>
+        <option value="Currie">Currie</option>
+        <option value="GPT-3.5">GPT-3.5</option>
+      </select>
+      
+      <label for="action">Действует как:</label>
+      <input type="text" id="action">
+      
+      <label for="inputCategory">Категория выбора действий:</label>
+      <select id="inputCategory">
+        <option value="Напиши">Напиши</option>
+        <option value="Сделай">Сделай</option>
+        <option value="Сгенерируй">Сгенерируй</option>
+        <option value="Объясни">Объясни</option>
+        <option value="Научи">Научи</option>
+        <option value="Проверь">Проверь</option>
+        <option value="Исправь">Исправь</option>
+        <option value="Добавь">Добавь</option>
+      </select>
+      
+      <label for="queryCategory">Запрос:</label>
+      <input type="text" id="queryCategory">
+    </div>
+    
+    <button onclick="generatePrompt()">Сгенерировать промпт</button>
+    </form>
+    <div id="promptContainer">
+      <pre id="prompt"></pre>
+    </div>
+    
+    <button onclick="copyPrompt()" id="copyButton" style="display: none;">Копировать промпт</button>
+  </div>
+  
+  <script>
+    function selectStyle() {
+      var selectedStyle = document.getElementById("style").value;
+      
+      document.getElementById("roleContainer").style.display = "none";
+      document.getElementById("moodContainer").style.display = "none";
+      document.getElementById("areaContainer").style.display = "none";
+      document.getElementById("queryContainer").style.display = "none";
+      document.getElementById("engineContainer").style.display = "none";
+      document.getElementById("featuresContainer").style.display = "none";
+      document.getElementById("chatGptContainer").style.display = "none";
+      
+      if (selectedStyle === "MidJorney" || selectedStyle === "OpenJorney") {
+        document.getElementById("roleContainer").style.display = "block";
+        document.getElementById("moodContainer").style.display = "block";
+        document.getElementById("areaContainer").style.display = "block";
+        document.getElementById("queryContainer").style.display = "block";
+        document.getElementById("engineContainer").style.display = "block";
+        document.getElementById("featuresContainer").style.display = "block";
+      } else if (selectedStyle === "ChatGPT") {
+        document.getElementById("chatGptContainer").style.display = "block";
+      }
+    }
+    
+    function generatePrompt() {
+      var selectedStyle = document.getElementById("style").value;
+      var prompt = "";
+      
+      if (selectedStyle === "MidJorney") {
+        var role = document.getElementById("role").value;
+        var mood = document.getElementById("mood").value;
+        var area = document.getElementById("area").value;
+        var query = document.getElementById("query").value;
+        var engine = document.getElementById("engine").value;
+        var features = getSelectedFeatures();
+        
+        prompt = `mdjrn-v4, ${role}, ${mood}, ${area}, ${query}, ${engine}, ${features}`;
+      }
+      else if (selectedStyle === "OpenJorney") {
+        var role = document.getElementById("role").value;
+        var mood = document.getElementById("mood").value;
+        var area = document.getElementById("area").value;
+        var query = document.getElementById("query").value;
+        var engine = document.getElementById("engine").value;
+        var features = getSelectedFeatures();
+        
+        prompt = `openjrney-v4, ${role}, ${mood}, ${area}, ${query}, ${engine}, ${features}`;
+      }
+      else if (selectedStyle === "ChatGPT") {
+    var chatGptCategory = document.getElementById("chatGptCategory").value;
+    var action = document.getElementById("action").value;
+    var inputCategory = document.getElementById("inputCategory").value;
+    var queryCategory = document.getElementById("queryCategory").value;
+    
+    prompt = `${chatGptCategory}: Действуй как ${action}. ${inputCategory} ${queryCategory}`; 
+      callChatGPT(prompt)
+      .then(function(response) {
+        document.getElementById("promptContainer").textContent = response;
+        document.getElementById("copyButton").style.display = "block";
+      })
+      .catch(function(error) {
+        console.log(error);
+        alert("Произошла ошибка при обработке запроса к ChatGPT.");
+      });
+  }
+  
+  document.getElementById("prompt").textContent = prompt;
+  document.getElementById("copyButton").style.display = "block";
+}
+
+async function callChatGPT(prompt) {
+  const apiKey = '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';
+  const url = "https://api.openai.com/v1/engines/davinci-codex/completions";
+  
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${apiKey}`
+    },
+    body: JSON.stringify({
+      prompt: prompt,
+      max_tokens: 100
+    })
+  });
+
+  const data = await response.json();
+  return data.choices[0].text.trim();
+}
+
+    
+    function getSelectedFeatures() {
+      var checkboxes = document.getElementsByName("feature");
+      var selectedFeatures = [];
+      
+      for (var i = 0; i < checkboxes.length; i++) {
+        if (checkboxes[i].checked) {
+          selectedFeatures.push(checkboxes[i].value);
+        }
+      }
+      
+      return selectedFeatures.join(", ");
+    }
+
+    function copyPrompt() {
+      var prompt = document.getElementById("prompt").textContent;
+      navigator.clipboard.writeText(prompt).then(function() {
+        alert("Промпт скопирован!");
+      }, function() {
+        alert("Ошибка при копировании промпта");
+      });
+    }
+  </script>
+</body>
+</html>

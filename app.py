@@ -1,7 +1,7 @@
 from flask import Flask, request, render_template
 import openai
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='templates')
 
 openai.api_key = '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'
 
@@ -9,7 +9,7 @@ openai.api_key = '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'
 def home():
     return render_template('index.html')
 
-@app.route('/generate', methods=['POST'])
+@app.route('/generate', methods=['GET'])
 def generate_prompt():
     prompt = request.form['prompt']
     model = request.form['model']
