@@ -1,12 +1,41 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Result</title>
+  <title>PROMPTCONST</title>
+  <style>
+    body {
+      background-color: #f1f1f1;
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      max-width: 400px;
+      margin: 0 auto;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      font-size: 24px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    p {
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+  </style>
 </head>
 <body>
-    <h1>Result</h1>
-    <p>Prompt: {{ prompt }}</p>
-    <p>Model: {{ model }}</p>
-    <p>Answer: {{ answer }}</p>
+  <div class="container">
+    <h2>PROMPTCONST</h2>
+    <p><strong>Prompt:</strong> {{ prompt }}</p>
+    <p><strong>Model:</strong> {{ model }}</p>
+    <p><strong>Answer:</strong></p>
+    <pre>{{ answer }}</pre>
+  </div>
 </body>
 </html>
