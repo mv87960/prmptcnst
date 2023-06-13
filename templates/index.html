@@ -195,11 +195,27 @@
       }
     }
     
-    function generatePrompt() {
-      var selectedStyle = document.getElementById("style").value;
-      var prompt = "";
-      
-      if (selectedStyle === "MidJorney") {
+    function callChatGPT(prompt) {
+  return fetch('https://api.openai.com/v1/engines/davinci-codex/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer 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'
+    },
+    body: JSON.stringify({
+      prompt: prompt,
+      max_tokens: 100
+    })
+  })
+  .then(response => response.json())
+  .then(data => data.choices[0].text.trim());
+}
+
+function generatePrompt() {
+  var selectedStyle = document.getElementById("style").value;
+  var prompt = "";
+
+  if (selectedStyle === "MidJorney") {
         var role = document.getElementById("role").value;
         var mood = document.getElementById("mood").value;
         var area = document.getElementById("area").value;
@@ -218,48 +234,32 @@
         var features = getSelectedFeatures();
         
         prompt = `openjrney-v4, ${role}, ${mood}, ${area}, ${query}, ${engine}, ${features}`;
-      }
-      else if (selectedStyle === "ChatGPT") {
+      
+  } else if (selectedStyle === "ChatGPT") {
     var chatGptCategory = document.getElementById("chatGptCategory").value;
     var action = document.getElementById("action").value;
     var inputCategory = document.getElementById("inputCategory").value;
     var queryCategory = document.getElementById("queryCategory").value;
-    
-    prompt = `${chatGptCategory}: Действуй как ${action}. ${inputCategory} ${queryCategory}`; 
-      callChatGPT(prompt)
-      .then(function(response) {
+
+    prompt = `${chatGptCategory}: Действуй как ${action}. ${inputCategory} ${queryCategory}`;
+
+    callChatGPT(prompt)
+      .then(response => {
         document.getElementById("promptContainer").textContent = response;
         document.getElementById("copyButton").style.display = "block";
       })
-      .catch(function(error) {
+      .catch(error => {
         console.log(error);
         alert("Произошла ошибка при обработке запроса к ChatGPT.");
       });
   }
-  
+
   document.getElementById("prompt").textContent = prompt;
   document.getElementById("copyButton").style.display = "block";
 }
 
-async function callChatGPT(prompt) {
-  const apiKey = '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';
-  const url = "https://api.openai.com/v1/engines/davinci-codex/completions";
-  
-  const response = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${apiKey}`
-    },
-    body: JSON.stringify({
-      prompt: prompt,
-      max_tokens: 100
-    })
-  });
 
-  const data = await response.json();
-  return data.choices[0].text.trim();
-}
+
 
     
     function getSelectedFeatures() {
@@ -283,6 +283,8 @@ async function callChatGPT(prompt) {
         alert("Ошибка при копировании промпта");
       });
     }
+
+ 
   </script>
 </body>
 </html>
